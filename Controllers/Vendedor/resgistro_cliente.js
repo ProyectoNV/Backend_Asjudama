@@ -4,7 +4,7 @@ const db = require("../../Model/db_model").promise();
 
 const informacionCliente = async (req, res) => {
     try {
-        const query= `SELECT u.pkfk_tdoc, u.numero_id, u.Nombres, u.Apellidos, u.celular FROM usuario u WHERE id_rol="2" AND estado="1"`;
+        const query= `SELECT u.pkfk_tdoc, u.numero_id, u.Nombres, u.Apellidos, u.celular FROM usuario u WHERE id_rol="3" AND estado="1"`;
         const [resultado] = await db.query(query)
         res.json(resultado)
     }
@@ -42,7 +42,7 @@ const registrarCliente = async (req, res) => {
             
             const Password = await bcrypt.hash(contrasena, 10);
 
-            const consul = await db.query("INSERT INTO usuario (pkfk_tdoc, numero_id, id_rol, Nombres, Apellidos,correo,celular,contrasena,estado) VALUES (?,?,?,?,?,?,?,?,?)", [pkfk_tdoc, numero_id, 2, Nombres, Apellidos, correo, celular, Password, 1]);
+            const consul = await db.query("INSERT INTO usuario (pkfk_tdoc, numero_id, id_rol, Nombres, Apellidos,correo,celular,contrasena,estado) VALUES (?,?,?,?,?,?,?,?,?)", [pkfk_tdoc, numero_id, 3, Nombres, Apellidos, correo, celular, Password, 1]);
 
             const [usuario] = await db.query ("SELECT id_usuario FROM usuario WHERE numero_id=?", [numero_id]);
             const id_cliente = usuario[0].id_usuario;
