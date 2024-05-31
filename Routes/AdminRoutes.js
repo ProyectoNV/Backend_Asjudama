@@ -5,7 +5,9 @@ const AdminRutas=express.Router()
 
 AdminRutas.post("/registro_producto", ProductosController.AgregarProducto);
 AdminRutas.put("/actualizar_producto/:id_producto", ProductosController.ActualizarProducto);
+AdminRutas.get("/Buscar_producto/:id_producto", ProductosController.BusquedaProducto);
 AdminRutas.get("/ver_productos", ProductosController.MostrarProductos);
+AdminRutas.get("/ver_productos_I", ProductosController.MostrarProductosI);
 AdminRutas.put("/estado_producto/:id_producto", ProductosController.CambiarEProductos);
 
 /// zonas 
