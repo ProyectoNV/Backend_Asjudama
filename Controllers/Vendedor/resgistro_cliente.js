@@ -147,6 +147,55 @@ const actualizarEstado = async (req, res) => {
     }
 };
 
+const informeMensual = async (req, res) => {
+    try {
+        const vendedorId = req.params.vendedorId; // Suponiendo que obtienes el ID del vendedor desde la solicitud
+        const query= `SELECT 
+            vendedor_id,
+            MONTH(fecha_abono) AS mes,
+            SUM(valor_abono) AS total_cobrado
+        FROM 
+            abono_factura af
+            INNER JOIN factura_venta fv ON af.numero_factura_abono = fv.numero_factura_venta
+        WHERE 
+            MONTH(fecha_abono) = MONTH(CURDATE()) AND
+            vendedor_id = ?   /* Colocamos un placeholder en lugar del ID_DEL_VENDEDOR */
+        GROUP BY 
+            vendedor_id, mes;`;
+        const [resultado] = await db.query(query, [vendedorId]); // Pasamos el ID del vendedor como parámetro
+        res.json(resultado);
+    }
+    catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+};
+
+
+const informeDiario = async (req, res) => {
+    try {
+        const vendedorId = req.params.vendedorId; // Suponiendo que obtienes el ID del vendedor desde la solicitud
+        const query= `SELECT 
+            vendedor_id,
+            fecha_abono AS fecha,
+            SUM(valor_abono) AS total_cobrado
+        FROM 
+            abono_factura af
+            INNER JOIN factura_venta fv ON af.numero_factura_abono = fv.numero_factura_venta
+        WHERE 
+            DATE(fecha_abono) = CURDATE() AND
+            vendedor_id = ?   /* Colocamos un placeholder en lugar del ID_DEL_VENDEDOR */
+        GROUP BY 
+            vendedor_id, fecha_abono;`;
+        const [resultado] = await db.query(query, [vendedorId]); // Pasamos el ID del vendedor como parámetro
+        res.json(resultado);
+    }
+    catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+};
+
 
 module.exports = {
     informacionCliente,
@@ -154,5 +203,7 @@ module.exports = {
     Clientes,
     registrarCliente,
     Consultaid,
-    actualizarEstado
+    actualizarEstado,
+    informeMensual,
+    informeDiario
 };
