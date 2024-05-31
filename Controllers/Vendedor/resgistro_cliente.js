@@ -124,19 +124,29 @@ const Consultaid = async (req, res) => {
 }
 const actualizarEstado = async (req, res) => {
     try {
-        const {numero_id} = req.params;
-        const {estado}= req.body
-        console.log(estado)
-        console.log(numero_id)
+        const { numero_id } = req.params;
         const connection = await db;
-        const result = await connection.query("UPDATE usuario SET estado = ? WHERE numero_id = ?", [estado, numero_id]);
-        res.json(result)
-    }
-    catch (error) {
-        res.status(500);
-        res.send(error.message);
+
+        // Obtener el estado actual
+        const [rows] = await db.query("SELECT estado FROM usuario WHERE numero_id = ?", [numero_id]);
+        if (rows.length === 0) {
+            res.status(404).send('Usuario no encontrado');
+            return;
+        }
+
+        // Alternar el estado
+        const estadoActual = rows[0].estado;
+        const nuevoEstado = estadoActual === 0 ? 1 : 0;
+
+        // Actualizar el estado
+        const result = await db.query("UPDATE usuario SET estado = ? WHERE numero_id = ?", [nuevoEstado, numero_id]);
+
+        res.json({ message: "Estado actualizado", nuevoEstado });
+    } catch (error) {
+        res.status(500).send(error.message);
     }
 };
+
 
 module.exports = {
     informacionCliente,
