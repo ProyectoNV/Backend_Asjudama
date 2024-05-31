@@ -124,13 +124,46 @@ const Consultaid = async (req, res) => {
 }
 const actualizarEstado = async (req, res) => {
     try {
-        const {numero_id} = req.params;
-        const {estado}= req.body
-        console.log(estado)
-        console.log(numero_id)
+        const { numero_id } = req.params;
         const connection = await db;
-        const result = await connection.query("UPDATE usuario SET estado = ? WHERE numero_id = ?", [estado, numero_id]);
-        res.json(result)
+
+        // Obtener el estado actual
+        const [rows] = await db.query("SELECT estado FROM usuario WHERE numero_id = ?", [numero_id]);
+        if (rows.length === 0) {
+            res.status(404).send('Usuario no encontrado');
+            return;
+        }
+
+        // Alternar el estado
+        const estadoActual = rows[0].estado;
+        const nuevoEstado = estadoActual === 0 ? 1 : 0;
+
+        // Actualizar el estado
+        const result = await db.query("UPDATE usuario SET estado = ? WHERE numero_id = ?", [nuevoEstado, numero_id]);
+
+        res.json({ message: "Estado actualizado", nuevoEstado });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+
+const informeMensual = async (req, res) => {
+    try {
+        const vendedorId = req.params.vendedorId; // Suponiendo que obtienes el ID del vendedor desde la solicitud
+        const query= `SELECT 
+            vendedor_id,
+            MONTH(fecha_abono) AS mes,
+            SUM(valor_abono) AS total_cobrado
+        FROM 
+            abono_factura af
+            INNER JOIN factura_venta fv ON af.numero_factura_abono = fv.numero_factura_venta
+        WHERE 
+            MONTH(fecha_abono) = MONTH(CURDATE()) AND
+            vendedor_id = ?   /* Colocamos un placeholder en lugar del ID_DEL_VENDEDOR */
+        GROUP BY 
+            vendedor_id, mes;`;
+        const [resultado] = await db.query(query, [vendedorId]); // Pasamos el ID del vendedor como parámetro
+        res.json(resultado);
     }
     catch (error) {
         res.status(500);
@@ -138,11 +171,39 @@ const actualizarEstado = async (req, res) => {
     }
 };
 
+
+const informeDiario = async (req, res) => {
+    try {
+        const vendedorId = req.params.vendedorId; // Suponiendo que obtienes el ID del vendedor desde la solicitud
+        const query= `SELECT 
+            vendedor_id,
+            fecha_abono AS fecha,
+            SUM(valor_abono) AS total_cobrado
+        FROM 
+            abono_factura af
+            INNER JOIN factura_venta fv ON af.numero_factura_abono = fv.numero_factura_venta
+        WHERE 
+            DATE(fecha_abono) = CURDATE() AND
+            vendedor_id = ?   /* Colocamos un placeholder en lugar del ID_DEL_VENDEDOR */
+        GROUP BY 
+            vendedor_id, fecha_abono;`;
+        const [resultado] = await db.query(query, [vendedorId]); // Pasamos el ID del vendedor como parámetro
+        res.json(resultado);
+    }
+    catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+};
+
+
 module.exports = {
     informacionCliente,
     actualizarCliente,
     Clientes,
     registrarCliente,
     Consultaid,
-    actualizarEstado
+    actualizarEstado,
+    informeMensual,
+    informeDiario
 };

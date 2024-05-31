@@ -39,9 +39,21 @@ const MostrarProductos = async (req, res) => {
     }
 }
 
+const MostrarProductosI = async (req, res) => {
+    try{
+        const basedata = await db;
+        const [datosbase] = await basedata.query("SELECT * from productos WHERE (estado_producto = 0)");
+        res.json(datosbase)
+
+    }catch(error){
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
 const CambiarEProductos = async (req, res) => {
     const { id_producto } = req.params;
-    const consulta="SELECT id_producto FROM productos WHERE id_producto = ?";
+    const consulta="SELECT estado_producto FROM productos WHERE id_producto = ?";
     const [verificarEstado] = await db.query(consulta, id_producto);
     let cambio = 1;
     if(verificarEstado[0].estado_producto === 1){
@@ -58,9 +70,24 @@ const CambiarEProductos = async (req, res) => {
     }
 };
 
+const BusquedaProducto = async (req, res)=>{
+    try{
+        const id_producto = req.params.id_producto
+        const basedata = await db;
+        const [datosbase] = await basedata.query("SELECT * from productos WHERE id_producto = ?", id_producto);
+        res.json(datosbase)
+
+    }catch(error){
+        res.status(500);
+        res.send(error.message);
+    }
+};
+
 module.exports={
     AgregarProducto,
     ActualizarProducto,
     MostrarProductos,
-    CambiarEProductos
+    MostrarProductosI,
+    CambiarEProductos,
+    BusquedaProducto
 }
