@@ -10,6 +10,8 @@ VendedorRutas.put('/actualizarClientes',registro_cliente.actualizarCliente)
 VendedorRutas.put('/actualizarEstado/:numero_id',registro_cliente.actualizarEstado)
 VendedorRutas.get('/infoClientes',registro_cliente.Clientes)
 VendedorRutas.get('/consultar_id/:numero_id',registro_cliente.Consultaid)
+VendedorRutas.get('/informemensual',registro_cliente.informeMensual)
+VendedorRutas.get('/informediario',registro_cliente.informeDiario)
 VendedorRutas.post('/registarClientes',registro_cliente.registrarCliente)
 
 module.exports= VendedorRutas;
