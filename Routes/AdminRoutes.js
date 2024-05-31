@@ -15,5 +15,7 @@ AdminRutas.put("/estado_producto/:id_producto", ProductosController.CambiarEProd
 AdminRutas.post('/registrar', ZonasController.Registrar_zona);
 AdminRutas.put('/actualizar/:id_zona', ZonasController.Actualizar_zona);
 AdminRutas.get('/ver_zona', ZonasController.VerZona);
+AdminRutas.get('/ver_zona_I', ZonasController.VerZonano);
+
 
 module.exports=AdminRutas;
