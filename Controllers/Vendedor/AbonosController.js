@@ -53,23 +53,31 @@ const buscarAbonos = async (req, res)=>{
         res.json(result)
     }
     catch(error){
+        res.status(500); 
+        res.send(error.message);
+    }
+}
+
+const buscarfactura = async (req, res) => {
+    try {
+        const { vendedorid, tdoc, numeroid } = req.params;
+        const connection = await db;
+        const query = `
+            SELECT fv.* 
+            FROM factura_venta fv
+            JOIN cliente c ON fv.cliente_id = c.id_cliente
+            JOIN usuario u ON c.id_cliente = u.id_usuario
+            JOIN tipo_documento td ON u.pkfk_tdoc = td.t_doc
+            WHERE u.numero_id = ? AND u.pkfk_tdoc = ? AND fv.vendedor_id = ? AND fv.estado_factura = 0
+        `;
+        const [result] = await connection.query(query, [numeroid, tdoc, vendedorid]);
+        res.json(result);
+    } catch (error) {
         res.status(500);
         res.send(error.message);
     }
 }
 
-const buscarfactura = async (req, res)=>{
-    try{
-        const {clienteid,vendedorid} = req.params;
-        const connection = await db;
-        const [result] = await connection.query("SELECT * FROM factura_venta WHERE (cliente_id = ?) AND (vendedor_id = ?) AND (estado_factura = 0)", [clienteid,vendedorid])
-        res.json(result)
-    }
-    catch(error){
-        res.status(500);
-        res.send(error.message);
-    }
-}
 
 module.exports = {
     registrarAbono,
