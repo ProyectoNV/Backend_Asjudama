@@ -4,6 +4,7 @@ const registro_cliente = require('../Controllers/Vendedor/resgistro_cliente')
 const VendedorRutas=express.Router()
 
 VendedorRutas.get("/buscar_factura_cliente_vendedor/:vendedorid/:tdoc/:numeroid", AbonosController.buscarfactura);
+VendedorRutas.get("/buscar_facturapaga_cliente_vendedor/:vendedorid/:tdoc/:numeroid", AbonosController.buscarfacturapaga);
 VendedorRutas.get("/buscar_abono/:numero_factura_abono", AbonosController.buscarAbonos);
 VendedorRutas.post("/registro_abono", AbonosController.registrarAbono);
 VendedorRutas.get('/mostrarClientes',registro_cliente.informacionCliente)
