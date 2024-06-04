@@ -21,6 +21,14 @@ AdminRutas.get('/ver_zona_I', ZonasController.VerZonano);
 //Registrar vendedor 
 AdminRutas.post("/registrarvendedor",RegistrarVendedor.RegistrarVendedor)
 AdminRutas.get("/informeCliente/:numeroDocumento",RegistrarVendedor.InformeCliente)
+AdminRutas.get("/informeVendedor/:numeroDocumento",RegistrarVendedor.InformeVendedor)
 
+AdminRutas.get("/Vendedores",RegistrarVendedor.MostrarVendedores)
+AdminRutas.put("/ActuVendedores/:id",RegistrarVendedor.EditarVendedor)
+AdminRutas.put("/ElimiVendedor/:id",RegistrarVendedor.EliminarVendedor)
+
+AdminRutas.get("/Clientes",RegistrarVendedor.MostrarClientes)
+AdminRutas.put("/ActuClientes/:id",RegistrarVendedor.EditarCliente)
+AdminRutas.put("/ElimiCliente/:id",RegistrarVendedor.EliminarCliente)
 
 module.exports=AdminRutas;
