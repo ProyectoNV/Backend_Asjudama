@@ -58,7 +58,7 @@ const InformeCliente = async (req, res) => {
         if (respuesta.length > 0) {
             const infoCliente = respuesta[0];
 
-            const consultaTotalCompras = "SELECT numero_factura_venta, fecha_factura, total_factura FROM factura_venta WHERE cliente_id = ? AND estado_factura = 0";
+            const consultaTotalCompras = "SELECT numero_factura_venta, fecha_factura, total_factura FROM factura_venta WHERE cliente_id = ? AND estado_factura = 1";
             const [respu] = await conn.query(consultaTotalCompras, [infoCliente.id_usuario]);
 
             // Sumar todos los valores de total_factura
@@ -88,7 +88,7 @@ const InformeVendedor = async (req, res) => {
 
     if(respuesta.length>0){
         const infoVendedor = respuesta[0]
-        const consultaventas="SELECT numero_factura_venta,fecha_factura,total_factura from factura_venta where vendedor_id = ? and estado_factura=0"
+        const consultaventas="SELECT numero_factura_venta,fecha_factura,total_factura from factura_venta where vendedor_id = ? and estado_factura=1"
         const [respu] =await conn.query(consultaventas,[infoVendedor.id_usuario])
 
         const totalVentas=parseFloat(respu.reduce((acc, factura) => acc + parseFloat(factura.total_factura), 0));

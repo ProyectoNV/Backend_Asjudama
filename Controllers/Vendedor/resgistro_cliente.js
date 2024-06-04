@@ -180,7 +180,7 @@ const informeMensual = async (req, res) => {
                 INNER JOIN usuario u ON v.id_vendedor = u.id_usuario
             WHERE 
                 MONTH(af.fecha_abono) = MONTH(CURDATE()) AND
-                u.numero_id = ? -- Usamos el número de identificación del vendedor como parámetro
+                u.numero_id = ?
             GROUP BY 
                 u.numero_id, fv.vendedor_id, mes;
         `;
