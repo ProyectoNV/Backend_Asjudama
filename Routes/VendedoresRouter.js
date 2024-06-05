@@ -1,6 +1,7 @@
 const express = require('express')
 const AbonosController = require('../Controllers/Vendedor/AbonosController')
 const registro_cliente = require('../Controllers/Vendedor/resgistro_cliente')
+const facturacontrol = require('../Controllers/Vendedor/FacturaController')
 const VendedorRutas=express.Router()
 
 VendedorRutas.get("/buscar_factura_cliente_vendedor/:vendedorid/:tdoc/:numeroid", AbonosController.buscarfactura);
@@ -15,5 +16,6 @@ VendedorRutas.get('/consultar_id/:numero_id',registro_cliente.Consultaid)
 VendedorRutas.get('/informemensual/:numeroIdentificacion',registro_cliente.informeMensual)
 VendedorRutas.get('/informediario/:numeroIdentificacion',registro_cliente.informeDiario)
 VendedorRutas.post('/registarClientes',registro_cliente.registrarCliente)
+VendedorRutas.post('/regisFactura', facturacontrol.RegistrarFacturaVenta)
 
 module.exports= VendedorRutas;
