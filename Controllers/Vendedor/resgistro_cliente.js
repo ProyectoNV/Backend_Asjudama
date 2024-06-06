@@ -230,6 +230,44 @@ const informeDiario = async (req, res) => {
     }
 };
 
+const ObtenerCliente = async (req, res) => {
+    const connection = await db;
+    const { numero_documento } = req.params;
+
+    try {
+        // Consulta para obtener los datos básicos de un cliente basándose en su número de documento
+        const query = `
+            SELECT 
+                u.id_usuario,
+                u.pkfk_tdoc,
+                u.numero_id,
+                u.Nombres,
+                u.Apellidos,
+                u.correo,
+                u.celular,
+                c.direccion
+            FROM 
+                usuario u
+            LEFT JOIN 
+                cliente c ON u.id_usuario = c.id_cliente
+            WHERE 
+                u.numero_id = ?
+        `;
+
+        const [result] = await connection.query(query, [numero_documento]);
+
+        if (result.length === 0) {
+            return res.status(404).json({ success: false, message: 'Cliente no encontrado.' });
+        }
+
+        res.json({ success: true, cliente: result[0] });
+    } catch (error) {
+        console.error('Error al obtener los datos del cliente:', error);
+        res.status(500).json({ success: false, message: 'Error al obtener los datos del cliente.' });
+    }
+};
+
+
 
 module.exports = {
     informacionCliente,
@@ -240,5 +278,6 @@ module.exports = {
     ConsultaNombre,
     actualizarEstado,
     informeMensual,
-    informeDiario
+    informeDiario,
+    ObtenerCliente
 };

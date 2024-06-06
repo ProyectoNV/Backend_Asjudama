@@ -64,6 +64,68 @@ const RegistrarFacturaVenta = async (req, res) => {
     }
 };
 
+const ObtenerFacturaCompleta = async (req, res) => {
+    const connection = await db;
+    const { numero_factura } = req.params;
+
+    try {
+        // Consulta para obtener la información completa de la factura, incluyendo productos, cliente y vendedor
+        const query = `
+            SELECT 
+                fv.numero_factura_venta,
+                fv.cliente_id,
+                CONCAT(uc.Nombres, ' ', uc.Apellidos) AS nombre_cliente,
+                uc.celular AS celular_cliente,
+                fv.vendedor_id,
+                CONCAT(uv.Nombres, ' ', uv.Apellidos) AS nombre_vendedor,
+                fv.fecha_factura,
+                fv.total_factura,
+                fv.estado_factura,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id_factura_producto', fp.id_factura_producto,
+                        'producto_id', fp.producto_id,
+                        'cantidad_producto', fp.cantidad_producto,
+                        'nombre_producto', p.nombre_producto,
+                        'valor_unitario', p.valor_unitario
+                    )
+                ) AS productos
+            FROM 
+                factura_venta fv
+            LEFT JOIN 
+                factura_productos fp ON fv.numero_factura_venta = fp.id_factura_venta
+            LEFT JOIN 
+                productos p ON fp.producto_id = p.id_producto
+            LEFT JOIN 
+                cliente cl ON fv.cliente_id = cl.id_cliente
+            LEFT JOIN 
+                usuario uc ON cl.id_cliente = uc.id_usuario
+            LEFT JOIN 
+                vendedor vd ON fv.vendedor_id = vd.id_vendedor
+            LEFT JOIN 
+                usuario uv ON vd.id_vendedor = uv.id_usuario
+            WHERE 
+                fv.numero_factura_venta = ?
+            GROUP BY 
+                fv.numero_factura_venta, fv.cliente_id, nombre_cliente, celular_cliente, fv.vendedor_id, nombre_vendedor, fv.fecha_factura, fv.total_factura, fv.estado_factura;
+        `;
+
+        const [result] = await connection.query(query, [numero_factura]);
+
+        if (result.length === 0) {
+            return res.status(404).json({ success: false, message: 'Factura no encontrada.' });
+        }
+
+        res.json({ success: true, factura: result[0] });
+    } catch (error) {
+        console.error('Error al obtener la factura completa:', error);
+        res.status(500).json({ success: false, message: 'Error al obtener la factura completa.' });
+    }
+};
+
+
+
 module.exports = {
-    RegistrarFacturaVenta
+    RegistrarFacturaVenta,
+    ObtenerFacturaCompleta
 };
